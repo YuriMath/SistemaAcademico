@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Acadêmico</title>
+
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            font-family: Arial, sans-serif;
+        }
+
+        .chat-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background-color: #111;
+            max-width: 900px;          /* 🔥 Deixa proporcional */
+            margin: auto;              /* 🔥 Centraliza tudo */
+            border-left: 3px solid #7FB045;
+            border-right: 3px solid #7FB045;
+            box-shadow: 0 0 25px #7fb04555;
+        }
+
+        .chat-header {
+            background-color: #7FB045;
+            color: white;
+            padding: 18px;
+            text-align: center;
+            font-size: 1.7em;
+            font-weight: bold;
+            border-bottom: 3px solid #50762E;
+        }
+
+        .chat-messages {
+            flex-grow: 1;
+            padding: 22px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 14px 20px;
+            border-radius: 15px;
+            margin-bottom: 14px;
+            word-wrap: break-word;
+            font-size: 1.15em;
+        }
+
+        .user-message {
+            background-color: #7FB045;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 0;
+        }
+
+        .bot-message {
+            background-color: #222;
+            color: #ccc;
+            align-self: flex-start;
+            border-bottom-left-radius: 0;
+            border-left: 3px solid #7FB045;
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 18px;
+            border-top: 1px solid #333;
+            background-color: #0d0d0d;
+        }
+
+        .chat-input input {
+            flex-grow: 1;
+            padding: 14px;
+            border: 1px solid #444;
+            border-radius: 20px;
+            margin-right: 10px;
+            font-size: 1.1em;
+            background: #1b1b1b;
+            color: #fff;
+        }
+
+        .chat-input button {
+            padding: 14px 20px;
+            background-color: #7FB045;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 1.1em;
+        }
+
+        .chat-input button:hover {
+            background-color: #6ea03a;
+        }
+    </style>
+
+</head>
+<body>
+
+    <div class="chat-container">
+        <div class="chat-header">Chatbot Acadêmico</div>
+
+        <div class="chat-messages" id="chat-messages">
+            <div class="message bot-message">Olá! Qual é a sua dúvida?</div>
+        </div>
+
+        <div class="chat-input">
+            <input type="text" id="user-input" placeholder="Digite sua mensagem...">
+            <button id="send-btn">Enviar</button>
+        </div>
+    </div>
+
+    <script>
+        const API_KEY = 'BOTA SUA API AQUI'; 
+        const chatMessages = document.getElementById('chat-messages');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', `${sender}-message`);
+            messageDiv.innerHTML = text.replace(/\n/g, '<br>');
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const userText = userInput.value.trim();
+            if (userText === '') return;
+
+            addMessage(userText, 'user');
+            userInput.value = '';
+
+            addMessage('Digitando...', 'bot');
+            const loadingMessage = chatMessages.lastChild;
+
+            try {
+                const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`;
+
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: userText }] }]
+                    })
+                });
+
+                const result = await response.json();
+                loadingMessage.remove();
+
+                if (!response.ok) {
+                    addMessage(`Erro ${response.status}: ${result.error?.message || 'Falha na API'}`, 'bot');
+                    return;
+                }
+
+                const botMessage = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                addMessage(botMessage || 'Sem resposta disponível.', 'bot');
+
+            } catch (error) {
+                loadingMessage.remove();
+                addMessage('Erro de conexão. Tente novamente.', 'bot');
+            }
+        }
+
+        sendBtn.addEventListener('click', sendMessage);
+
+        userInput.addEventListener('keypress', e => {
+            if (e.key === 'Enter') sendMessage();
+        });
+    </script>
+
+</body>
+</html> refatore esse codigo usando o hugginface para ser possivel usar o chat bot no infiniti freee 

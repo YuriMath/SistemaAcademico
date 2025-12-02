@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+<meta charset="UTF-8">
+<title>Mapa – PROZ Educação Venda Nova</title>
+
+<style>
+    body {
+        margin: 0;
+        background: #000;
+        color: #fff;
+        font-family: Arial, sans-serif;
+    }
+
+    header {
+        background: #111;
+        padding: 20px;
+        text-align: center;
+        font-size: 26px;
+        font-weight: bold;
+        border-bottom: 2px solid #7FB045;
+        color: #7FB045;
+    }
+
+    .container {
+        padding: 25px;
+        text-align: center;
+        max-width: 900px;      /* ❗ Limita a largura do conteúdo */
+        margin: auto;          /* ❗ Centraliza na tela */
+    }
+
+    h3 {
+        color: #7FB045;
+        margin-bottom: 20px;
+    }
+
+    .mapa-wrapper {
+        width: 100%;
+        height: 0;
+        padding-bottom: 56%;   /* ❗ Proporção 16:9 para o mapa */
+        position: relative;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 0 20px #7fb04555;
+    }
+
+    iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: 0;
+    }
+</style>
+</head>
+
+<body>
+
+<header>Localização – PROZ Educação Venda Nova</header>
+
+<div class="container">
+
+    <h3>Rua Padre Pedro Pinto, 442 – Venda Nova, Belo Horizonte – MG</h3>
+
+    <!-- WRAPPER RESPONSIVO DO MAPA -->
+    <div class="mapa-wrapper">
+        <iframe 
+            src="https://www.google.com/maps/embed?pb=!4v1764091735184!6m8!1m7!1smo1GFrpIV16g7SO3Uh7tZw!2m2!1d-19.82372019303196!2d-43.94554298012692!3f250.85987229665915!4f0!5f0.7820865974627469" 
+            allowfullscreen 
+            loading="lazy" 
+            referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+    </div>
+
+</div>
+
+</body>
+</html>

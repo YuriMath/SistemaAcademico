@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Quiz de Programação</title>
+
+<style>
+    body { 
+        background:#0e0e0e; 
+        color:#fff; 
+        font-family:Arial; 
+        padding:20px;
+    }
+
+    h2 {
+        text-align:center;
+        color:#7FB045;
+    }
+
+    .box { 
+        background:#111; 
+        padding:25px; 
+        border-radius:12px; 
+        max-width:500px; 
+        margin:auto; 
+        border:2px solid #7FB04555;
+    }
+
+    .op { 
+        background:#222; 
+        padding:12px; 
+        margin:12px 0; 
+        border-radius:8px;
+        cursor:pointer; 
+        border:1px solid transparent;
+        transition:0.2s;
+    }
+
+    .op:hover {
+        border-color:#7FB045;
+    }
+
+    .correta { 
+        background:#7FB045; 
+        color:#000; 
+        font-weight:bold;
+    }
+
+    .errada {
+        background:#8B0000;
+    }
+
+    #btnProxima {
+        background:#7FB045;
+        border:none;
+        padding:12px 22px;
+        margin-top:15px;
+        cursor:pointer;
+        border-radius:8px;
+        font-size:16px;
+        transition:0.2s;
+    }
+
+    #btnProxima:hover {
+        opacity:0.8;
+    }
+
+    #mensagem {
+        font-size:18px;
+        font-weight:bold;
+        margin-top:10px;
+    }
+</style>
+</head>
+
+<body>
+
+<h2>Quiz de Programação</h2>
+
+<div class="box">
+    <h3 id="pergunta"></h3>
+    <div id="opcoes"></div>
+    <p id="mensagem"></p>
+    <button id="btnProxima">Próxima</button>
+</div>
+
+<script>
+
+const perguntas = [
+    {
+        texto: "O que significa 'HTML'?",
+        opcoes: [
+            { texto:"HyperText Markup Language", correta:true },
+            { texto:"HyperTool Multi Language", correta:false },
+            { texto:"Home Tool Markup Link", correta:false }
+        ]
+    },
+    {
+        texto: "Qual símbolo é usado para comentários em JavaScript?",
+        opcoes: [
+            { texto:"// comentário", correta:true },
+            { texto:"<!-- comentário -->", correta:false },
+            { texto:"# comentário", correta:false }
+        ]
+    },
+    {
+        texto: "Qual dessas é uma linguagem de programação?",
+        opcoes: [
+            { texto:"Python", correta:true },
+            { texto:"Chrome", correta:false },
+            { texto:"GitHub", correta:false }
+        ]
+    },
+    {
+        texto: "Qual comando imprime texto no console em JavaScript?",
+        opcoes: [
+            { texto:"console.log()", correta:true },
+            { texto:"print()", correta:false },
+            { texto:"show()", correta:false }
+        ]
+    },
+    {
+        texto: "Qual destas estruturas repete um bloco de código?",
+        opcoes: [
+            { texto:"for", correta:true },
+            { texto:"if", correta:false },
+            { texto:"return", correta:false }
+        ]
+    }
+];
+
+
+
+let indice = 0;
+let acertos = 0;
+let erros = 0;
+
+const elemPergunta = document.getElementById("pergunta");
+const elemOpcoes   = document.getElementById("opcoes");
+const elemMsg      = document.getElementById("mensagem");
+const btnProxima   = document.getElementById("btnProxima");
+
+
+
+function embaralhar(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+
+
+function mostrarPergunta() {
+    const atual = perguntas[indice];
+
+    embaralhar(atual.opcoes);
+
+    elemPergunta.textContent = atual.texto;
+    elemOpcoes.innerHTML = "";
+    elemMsg.textContent = "";
+    btnProxima.style.display = "block";
+
+    atual.opcoes.forEach(op => {
+        const botao = document.createElement("div");
+        botao.className = "op";
+        botao.textContent = op.texto;
+
+        botao.onclick = () => {
+            if (op.correta) {
+                botao.classList.add("correta");
+                elemMsg.textContent = "Acertou!";
+                acertos++;
+            } else {
+                botao.classList.add("errada");
+                elemMsg.textContent = "Errou!";
+                erros++;
+            }
+
+            document.querySelectorAll(".op").forEach(b => b.onclick = null);
+        };
+
+        elemOpcoes.appendChild(botao);
+    });
+}
+
+
+
+btnProxima.onclick = () => {
+    indice++;
+
+    if (indice >= perguntas.length) {
+        mostrarResultadoFinal();
+        return;
+    }
+
+    mostrarPergunta();
+};
+
+
+
+function mostrarResultadoFinal() {
+    elemPergunta.textContent = "Fim do Quiz!";
+    elemOpcoes.innerHTML = "";
+    elemMsg.innerHTML = 
+        "<strong style='color:#7FB045'>Acertos:</strong> " + acertos + "<br>" +
+        "<strong style='color:#8B0000'>Erros:</strong> " + erros;
+
+    btnProxima.style.display = "none";
+}
+
+
+
+mostrarPergunta();
+</script>
+
+</body>
+</html>

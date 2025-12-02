@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<!-- 
+    Referências úteis:
+    https://www.w3schools.com/
+    https://pt.stackoverflow.com/questions/280758/mascara-no-form-somente-em-html-e-css
+-->
+
+<head>
+    <!-- Declaração do conjunto de caracteres usado -->
+    <meta charset="UTF-8">
+
+    <!-- Autor da página -->
+    <meta name="author" content="">    
+
+    <!-- Configuração para o site ser responsivo em dispositivos móveis -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">                     
+
+    <!-- Título que aparece na aba do navegador -->
+    <title>Cadastro de Curso</title>
+    
+    <!-- Importação do arquivo CSS externo -->
+    <link rel="stylesheet" href="css/matricula.css" type="text/css">     
+
+    <script type="text/javascript" src="js/cadastro_de_professor.js" defer></script>
+</head>
+
+<body>
+
+    <!-- Título principal da página -->
+    <h2>MATRICULAR-SE</h2>
+
+    <!-- Linha horizontal apenas para separação visual -->
+
+
+
+<div class="conteiner">
+    <div class="flex">
+
+        <form name="formprofessor" method="post" onsubmit="return test_form();"  >
+
+            <label for="al-pf">Tipo De Usuário:</label>
+            <select name="al-pf" id="al-pf">
+                <option value="">Selecione:</option>
+                <option value="al">Aluno</option>
+                <option value="pf">Professor</option>
+            </select>
+
+            <label for="professor">Nome do Usuário: *</label>
+            <input type="text" id="professor" name="professor" > 
+        
+            <label for="cpf">CPF: *</label>
+            <input type="text" id="cpf" name="cpf" placeholder="###.###.###-##" oninput="return mask_cpf(this)"> 
+			<!--A tag <small> no HTML é usada para indicar texto em menor destaque -->
+            <small>(Sem espaços, pontos ou traços)</small>
+
+            <input type="reset" value="Limpar">
+            <input type="submit" value="Entrar">
+        </form>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Mensagem Acessível</title>
+
+  <style>
+    body {
+      background: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    /* Deixa o texto invisível, mas ainda acessível para o JavaScript */
+    #mensagem {
+      visibility: hidden;
+      height: 0;
+      overflow: hidden;
+    }
+
+    /* Botão gigante */
+    button {
+      background: #1a73e8;
+      color: #fff;
+      padding: 25px 40px;
+      font-size: 26px;
+      font-weight: bold;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      width: 100%;
+      max-width: 600px;
+      display: block;
+      margin: 50px auto;
+      text-align: center;
+    }
+
+    button:hover {
+      background: #1559b0;
+    }
+
+    /* Ícone de alto-falante dentro do botão */
+    .icone-audio {
+      font-size: 40px;
+      margin-right: 15px;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Bem-vindo!</h1>
+
+  <!-- Texto invisível, mas será lido -->
+  <p id="mensagem">
+    Esta é uma mensagem acessível para pessoas com deficiência visual.
+    Bem-vindo ao Controle Acadêmico.
+
+    Você poderá consultar suas notas e também suas frequências.
+
+    Nota média para aprovação:
+    Essa média é alcançada através da média aritmética das notas da Avaliação Formativa,
+    Atividade Avaliativa e Atividade na Plataforma da instituição.
+    Aprovado: Nota igual ou maior que 6.
+
+    Frequência para aprovação:
+    Faltas justificadas através de requisição apresentada pelo aluno serão abonadas.
+    Frequência igual ou maior que 75%.
+
+    Recuperação:
+    Nota entre 4 e 5,5.
+
+    Reclassificação:
+    Nota igual ou maior que 6 e Frequência abaixo de 75%.
+
+    Reprovado:
+    Nota menor que 4.
+  </p>
+
+  <!-- Botão gigante com ícone de som -->
+  <button onclick="lerMensagem()" aria-label="Ouvir a mensagem completa">
+    <span class="icone-audio">🔊</span>
+    DEFICIENTE VISUAL — OUVIR. CLIQUE AQUI!
+  </button>
+
+  <script>
+    function lerMensagem() {
+      const texto = document.getElementById("mensagem").textContent;
+      const fala = new SpeechSynthesisUtterance(texto);
+      fala.lang = "pt-BR";
+      speechSynthesis.speak(fala);
+    }
+  </script>
+
+</body>
+</html>
+
+
