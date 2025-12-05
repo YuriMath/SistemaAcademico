@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chatbot Acadêmico</title>
-
     <style>
         html, body {
             height: 100%;
@@ -20,8 +19,8 @@
             display: flex;
             flex-direction: column;
             background-color: #111;
-            max-width: 900px;          /* 🔥 Deixa proporcional */
-            margin: auto;              /* 🔥 Centraliza tudo */
+            max-width: 900px;
+            margin: auto;
             border-left: 3px solid #7FB045;
             border-right: 3px solid #7FB045;
             box-shadow: 0 0 25px #7fb04555;
@@ -52,6 +51,7 @@
             margin-bottom: 14px;
             word-wrap: break-word;
             font-size: 1.15em;
+            line-height: 1.5;
         }
 
         .user-message {
@@ -67,6 +67,17 @@
             align-self: flex-start;
             border-bottom-left-radius: 0;
             border-left: 3px solid #7FB045;
+        }
+
+        .error-message {
+            background-color: #8b0000;
+            color: #fff;
+            border-left: 3px solid #ff4444;
+        }
+
+        .typing {
+            opacity: 0.6;
+            font-style: italic;
         }
 
         .chat-input {
@@ -87,6 +98,11 @@
             color: #fff;
         }
 
+        .chat-input input:focus {
+            outline: none;
+            border-color: #7FB045;
+        }
+
         .chat-input button {
             padding: 14px 20px;
             background-color: #7FB045;
@@ -95,87 +111,106 @@
             border-radius: 20px;
             cursor: pointer;
             font-size: 1.1em;
+            transition: background-color 0.3s;
         }
 
-        .chat-input button:hover {
+        .chat-input button:hover:not(:disabled) {
             background-color: #6ea03a;
         }
-    </style>
 
+        .chat-input button:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+    </style>
 </head>
 <body>
 
-    <div class="chat-container">
-        <div class="chat-header">Chatbot Acadêmico</div>
+<div class="chat-container">
+    <div class="chat-header">Chatbot Acadêmico</div>
 
-        <div class="chat-messages" id="chat-messages">
-            <div class="message bot-message">Olá! Qual é a sua dúvida?</div>
-        </div>
-
-        <div class="chat-input">
-            <input type="text" id="user-input" placeholder="Digite sua mensagem...">
-            <button id="send-btn">Enviar</button>
-        </div>
+    <div class="chat-messages" id="chat-messages">
+        <div class="message bot-message">Olá! Sou seu assistente acadêmico. Como posso te ajudar hoje?</div>
     </div>
 
-    <script>
-        const API_KEY = 'BOTA SUA API AQUI'; 
-        const chatMessages = document.getElementById('chat-messages');
-        const userInput = document.getElementById('user-input');
-        const sendBtn = document.getElementById('send-btn');
+    <div class="chat-input">
+        <input type="text" id="user-input" placeholder="Digite sua mensagem...">
+        <button id="send-btn">Enviar</button>
+    </div>
+</div>
 
-        function addMessage(text, sender) {
-            const messageDiv = document.createElement('div');
-            messageDiv.classList.add('message', `${sender}-message`);
-            messageDiv.innerHTML = text.replace(/\n/g, '<br>');
-            chatMessages.appendChild(messageDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
+<script>
 
-        async function sendMessage() {
-            const userText = userInput.value.trim();
-            if (userText === '') return;
+    // URL DO SEU BACKEND NA VERCEL
+    const API_URL = "https://chat-api-brown.vercel.app/api/chat";
 
-            addMessage(userText, 'user');
-            userInput.value = '';
+    const chatMessages = document.getElementById('chat-messages');
+    const userInput = document.getElementById('user-input');
+    const sendBtn = document.getElementById('send-btn');
 
-            addMessage('Digitando...', 'bot');
-            const loadingMessage = chatMessages.lastChild;
+    function addMessage(text, sender, isTyping = false) {
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('message', `${sender}-message`);
+        if (isTyping) messageDiv.classList.add('typing');
+        messageDiv.innerHTML = text.replace(/\n/g, '<br>');
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        return messageDiv;
+    }
 
-            try {
-                const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`;
+    async function sendMessage() {
+        const userText = userInput.value.trim();
+        if (!userText) return;
 
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: userText }] }]
-                    })
-                });
+        // Mensagem do usuário
+        addMessage(userText, 'user');
+        userInput.value = '';
+        sendBtn.disabled = true;
 
-                const result = await response.json();
-                loadingMessage.remove();
+        // Indicador de digitação
+        const loadingMessage = addMessage('Digitando...', 'bot', true);
 
-                if (!response.ok) {
-                    addMessage(`Erro ${response.status}: ${result.error?.message || 'Falha na API'}`, 'bot');
-                    return;
-                }
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: userText })
+            });
 
-                const botMessage = result.candidates?.[0]?.content?.parts?.[0]?.text;
-                addMessage(botMessage || 'Sem resposta disponível.', 'bot');
+            const result = await response.json();
 
-            } catch (error) {
-                loadingMessage.remove();
-                addMessage('Erro de conexão. Tente novamente.', 'bot');
+            loadingMessage.remove();
+
+            if (!response.ok) {
+                addMessage("❌ " + (result.error || 'Erro ao enviar mensagem.'), 'bot')
+                    .classList.add('error-message');
+                return;
             }
+
+            addMessage(result.reply || 'Sem resposta disponível.', 'bot');
+
+        } catch (error) {
+            loadingMessage.remove();
+            addMessage('❌ Erro de conexão. Tente novamente.', 'bot')
+                .classList.add('error-message');
+            console.error(error);
+        } finally {
+            sendBtn.disabled = false;
+            userInput.focus();
         }
+    }
 
-        sendBtn.addEventListener('click', sendMessage);
+    sendBtn.addEventListener('click', sendMessage);
+    userInput.addEventListener('keypress', e => {
+        if (e.key === 'Enter' && !sendBtn.disabled) {
+            sendMessage();
+        }
+    });
 
-        userInput.addEventListener('keypress', e => {
-            if (e.key === 'Enter') sendMessage();
-        });
-    </script>
+    userInput.focus();
+
+</script>
 
 </body>
-</html> refatore esse codigo usando o hugginface para ser possivel usar o chat bot no infiniti freee 
+</html>
